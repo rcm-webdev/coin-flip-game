@@ -1,62 +1,46 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const PORT = 8000
+require("dotenv").config();
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const PORT = process.env.PORT || 3000;
 
-app.use(cors())
+app.use(cors());
 
-let rappers = {
-    '21 savage': {
-        'age': 28,
-        'birthName': 'Shéyaa Bin Abraham-Joseph',
-        'birthdate': '22 October 1992', 
-        'birthLocation': 'London, England',
-        'origin': 'Atlanta, Georgia',
-        'genre': 'hip hop, trap, rap, horrorcore',
-        'occupation': 'rapper, songwriter, record producer',
-        'yearsActive': '2013-present',
-        'labels': 'Epic, Slaughter Gang',
-        'children': 3
-    },
-    'chance the rapper':{
-        'age': 28,
-        'birthName': 'Chancelor Jonathan Bennett',
-        'birthdate': 'April 16, 1993', 
-        'birthLocation': 'London, England',
-        'origin': 'Chicago, Illinois',
-        'genre': 'hip hop, alternative hip hop, r & b',
-        'occupation': 'rapper, singer, song writer, record producer, activist, actor, philanthropist',
-        'yearsActive': '2011-present',
-        'labels': 'none',
-        'children': 0
-    },
-    'unknown':{
-        'age': 'unknown',
-        'birthName': 'unknown',
-        'birthdate': 'unknown', 
-        'birthLocation': 'unknown',
-        'origin': 'unknown',
-        'genre': 'unknown',
-        'occupation': 'unknown',
-        'yearsActive': 'unknown',
-        'labels': 'unknown',
-        'children': 'unknown'
+app.use(express.static("public"));
+
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+
+// Game state
+let gameState = {
+  flips: 0,
+  heads: 0,
+  tails: 0,
+  lastResult: null,
+};
+
+app.get("/", (req, res) => {
+  res.render("index", { gameState });
+});
+
+app.post("/flip", (req, res) => {
+  if (gameState.flips >= 10) {
+    // Reset the game if 10 flips have been reached
+    gameState = { flips: 0, heads: 0, tails: 0, lastResult: null };
+  } else {
+    // Perform the coin flip
+    const result = Math.random() < 0.5 ? "Heads" : "Tails";
+    gameState.flips++;
+    gameState.lastResult = result;
+    if (result === "Heads") {
+      gameState.heads++;
+    } else {
+      gameState.tails++;
     }
-}
+  }
+  res.render("index", { gameState });
+});
 
-app.get('/', (request, response) => {
-    response.sendFile(__dirname + '/index.html')
-})
-
-app.get('/api/:name', (request, response) => {
-    const rapperName = request.params.name.toLowerCase()
-    if(rappers[rapperName]){
-        response.json(rappers[rapperName])
-    }else{
-        response.json(rappers['unknown'])
-    }
-})
-
-app.listen(process.env.PORT || PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});

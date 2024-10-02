@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coin Flip Game</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Coin Flip Game</h1>
+      <p>Best of luck</p>
+      <form action="/flip" method="POST">
+        <button type="submit">Flip Coin</button>
+      </form>
+      <div id="result">
+        <% if (gameState.lastResult) { %> Last Flip: <%= gameState.lastResult %>
+        <% } %>
+      </div>
+      <div id="stats">
+        <p>Flips: <%= gameState.flips %>/10</p>
+        <p>Heads: <%= gameState.heads %></p>
+        <p>Tails: <%= gameState.tails %></p>
+        <% if (gameState.flips >= 10) { %>
+        <p><strong>Game Over! Click to start a new game.</strong></p>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
